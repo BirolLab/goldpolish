@@ -9,6 +9,8 @@ echo "Launching GoldPolish-Target with minimap2"
 
 goldpolish --target --target_dev --minimap2 goldpolish_target_test_golden_path.fa test_reads.fq goldpolish_target_test_golden_path.targeted.fa
 
+abyss-fac --count-ambig goldpolish_target_test_golden_path.targeted.fa $(pwd)/expected_files/minimap2/goldpolish_target_test_golden_path.targeted.polished.expected.fa
+
 if cmp --silent -- goldpolish_target_test_golden_path.targeted.fa $(pwd)/expected_files/minimap2/goldpolish_target_test_golden_path.targeted.polished.expected.fa && \
    cmp --silent -- goldpolish_target_test_golden_path.targeted.gaps.i.fa $(pwd)/expected_files/minimap2/goldpolish_target_test_golden_path.targeted.gaps.expected.fa && \
    cmp --silent -- goldpolish_target_test_golden_path.targeted.gaps.goldpolished.i.fa $(pwd)/expected_files/minimap2/goldpolish_target_test_golden_path.targeted.gaps.goldpolished.expected.fa; then 

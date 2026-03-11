@@ -190,8 +190,6 @@ jobs:
       ./goldpolish_target_minimap2_test.sh
     displayName: Test run for GoldPolish-Target with minimap2
 
-  - publish: tests/goldpolish_target_test_golden_path.targeted.fa
-    artifact: ubuntu_minimap
 
 - job:
   displayName: mac-latest-goldpolish-target-minimap2
