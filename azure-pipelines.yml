@@ -174,7 +174,7 @@ jobs:
     displayName: Create Anaconda environment
   - script: |
       source activate goldpolish_target_CI
-      mamba install --yes -c bioconda -c conda-forge compilers meson boost-cpp minimap2=2.28 ntlink btllib snakemake intervaltree
+      mamba install --yes -c bioconda -c conda-forge compilers meson boost-cpp minimap2=2.28 ntlink btllib=1.7.3 snakemake intervaltree
     displayName: Install dependencies
   - script: |
       source activate goldpolish_target_CI
