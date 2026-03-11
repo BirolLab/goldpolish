@@ -1,8 +1,8 @@
-![Logo](https://github.com/bcgsc/goldpolish/blob/master/goldpolish-logo.png)
+![Logo](https://github.com/BirolLab/goldpolish/blob/master/goldpolish-logo.png)
 
 # GoldPolish (aka GoldRush-Edit)
 
-GoldPolish (aka GoldRush-Edit) is an efficient draft genome assembly polishing tool that uses long reads for polishing. [ntEdit](https://github.com/bcgsc/ntEdit) polishes the draft assembly and flags additional erroneous regions, then [Sealer](https://github.com/bcgsc/abyss/tree/master/Sealer) fills assembly gaps and erroneous sequence regions flagged by ntEdit. The polisher is adapted from the [ntedit_sealer_protocol](https://github.com/bcgsc/ntedit_sealer_protocol/) to use long reads instead of short reads.
+GoldPolish (aka GoldRush-Edit) is an efficient draft genome assembly polishing tool that uses long reads for polishing. [ntEdit](https://github.com/BirolLab/ntEdit) polishes the draft assembly and flags additional erroneous regions, then [Sealer](https://github.com/BirolLab/abyss/tree/master/Sealer) fills assembly gaps and erroneous sequence regions flagged by ntEdit. The polisher is adapted from the [ntedit_sealer_protocol](https://github.com/BirolLab/ntedit_sealer_protocol/) to use long reads instead of short reads.
 
 ## Dependencies
 
@@ -10,14 +10,14 @@ GoldPolish (aka GoldRush-Edit) is an efficient draft genome assembly polishing t
   * GCC 7+ or Clang 8+ (with OpenMP support)
   * [meson](https://mesonbuild.com/)
   * [ninja](https://ninja-build.org/)
-  * [btllib](https://github.com/bcgsc/btllib) v1.6.2+
+  * [btllib](https://github.com/BirolLab/btllib) v1.6.2+
   * [boost](https://www.boost.org/)
 
 - Run
   * GNU Make
   * Python 3
-  * [btllib](https://github.com/bcgsc/btllib) v1.6.2+
-  * [ntLink](https://github.com/bcgsc/ntlink) v1.3.5+
+  * [btllib](https://github.com/BirolLab/btllib) v1.6.2+
+  * [ntLink](https://github.com/BirolLab/ntlink) v1.3.5+
   * [minimap2](https://github.com/lh3/minimap2)
   * [snakemake](https://github.com/snakemake/snakemake)
   * [intervaltree](https://github.com/chaimleib/intervaltree) 
