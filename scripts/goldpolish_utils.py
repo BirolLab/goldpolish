@@ -23,6 +23,27 @@ def get_random_name():
     )
 
 
+def read_pipe_message(pipepath):
+    """Read one newline-terminated message from a named pipe.
+
+    Stops at the newline instead of reading to end of file: on macOS, the final
+    end-of-file read() on a named pipe can block forever after the writer has
+    closed it. Raw os.read() is used because buffered file reads keep reading
+    until end of file.
+    """
+    fd = os.open(pipepath, os.O_RDONLY)
+    try:
+        data = b""
+        while not data.endswith(b"\n"):
+            chunk = os.read(fd, 4096)
+            if not chunk:  # Writer closed without a newline.
+                break
+            data += chunk
+    finally:
+        os.close(fd)
+    return data.decode()
+
+
 def process_terminate():
     """SIGTERM the calling process."""
     os.kill(os.getpid(), signal.SIGTERM)

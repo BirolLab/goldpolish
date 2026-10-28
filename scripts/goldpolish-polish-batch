@@ -13,11 +13,13 @@ from goldpolish_utils import (
     update_threads_in_use,
     compare_update_threads_in_use,
     update_simultaneous_batch_processes,
+    read_pipe_message,
 )
 
 GOLDPOLISH_MAKE = "goldpolish-make"
 GOLDPOLISH_MAKE_FULL_PATH = f"{os.path.dirname(os.path.realpath(__file__))}/{GOLDPOLISH_MAKE}"
 GOLDPOLISH_HOLD = "goldpolish-hold"
+END_SYMBOL = "x"  # same as in goldpolish and goldpolish-targeted-bfs
 RETRY_DELAY = 0.2
 
 
@@ -63,8 +65,8 @@ def get_bfs_ready(bfs_dirpath, id_pipename, seq_ids, ready_pipename):
     with open(join(bfs_dirpath, id_pipename), "w") as id_pipe:
         for id in seq_ids:
             id_pipe.write(id + "\n")
-    with open(join(bfs_dirpath, ready_pipename)) as f:
-        f.read()
+        id_pipe.write(END_SYMBOL + "\n")  # lets the reader stop without waiting for EOF
+    read_pipe_message(join(bfs_dirpath, ready_pipename))
 
 
 def run_polishing(seqs_to_polish, bfs, k_values, threads):

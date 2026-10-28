@@ -22,6 +22,9 @@ bind_to_parent();
 void
 make_pipe(const std::string& pipepath);
 
+std::vector<std::string>
+read_pipe_lines(const std::string& pipepath, const std::string& end_line);
+
 std::string
 read_pipe(const std::string& pipepath);
 

@@ -12,7 +12,7 @@ import shutil
 
 import btllib
 
-from goldpolish_utils import bind_to_parent
+from goldpolish_utils import bind_to_parent, read_pipe_message
 
 RUSH_DELAY = 1  # Seconds
 
@@ -44,8 +44,7 @@ def write_batch_results(polished_seqs, writer):
 
 
 def wait_on_batch(batch_done_pipe):
-    with open(batch_done_pipe) as f:
-        f.read()
+    read_pipe_message(batch_done_pipe)
 
 
 def start_reapin(workspace, prefix, batch_polished_seqs, output_seqs):
