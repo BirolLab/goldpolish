@@ -7,6 +7,7 @@
 #include "btllib/status.hpp"
 
 #include <algorithm>
+#include <cerrno>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -21,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -77,12 +79,71 @@ make_pipe(const std::string& pipepath)
                       FN_NAME + ": mkfifo failed: " + btllib::get_strerror());
 }
 
+// Pipe messages are newline-terminated lines, and readers stop at the last line
+// they expect instead of reading to end of file. On macOS, the final
+// end-of-file read() on a named pipe can block forever after the writer has
+// closed it, so a reader must never depend on that read. Raw read() is used
+// because stdio and iostream buffering keep reading until the buffer is full or
+// end of file is reached.
+std::vector<std::string>
+read_pipe_lines(const std::string& pipepath, const std::string& end_line)
+{
+  const int fd = open(pipepath.c_str(), O_RDONLY | O_CLOEXEC);
+  btllib::check_error(fd < 0,
+                      FN_NAME + ": failed to open " + pipepath + ": " +
+                        btllib::get_strerror());
+  std::vector<std::string> lines;
+  std::string pending;
+  std::vector<char> buf(4096); // NOLINT(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
+  bool done = false;
+  while (!done) {
+    const auto n = read(fd, buf.data(), buf.size());
+    if (n < 0 && errno == EINTR) {
+      continue;
+    }
+    btllib::check_error(n < 0,
+                        FN_NAME + ": failed to read " + pipepath + ": " +
+                          btllib::get_strerror());
+    if (n == 0) { // Writer closed without sending end_line.
+      break;
+    }
+    pending.append(buf.data(), n);
+    size_t start = 0;
+    size_t newline = 0;
+    while ((newline = pending.find('\n', start)) != std::string::npos) {
+      auto line = pending.substr(start, newline - start);
+      start = newline + 1;
+      if (end_line.empty()) {
+        lines.push_back(std::move(line));
+        done = true;
+        break;
+      }
+      if (line == end_line) {
+        done = true;
+        break;
+      }
+      lines.push_back(std::move(line));
+    }
+    pending.erase(0, start);
+  }
+  if (!done && !pending.empty()) {
+    lines.push_back(pending);
+  }
+  close(fd);
+  return lines;
+}
+
 std::string
 read_pipe(const std::string& pipepath)
 {
+  const auto lines = read_pipe_lines(pipepath, "");
+  if (lines.empty()) {
+    return "";
+  }
+  // Same token as the former `input >> str`: the first whitespace-free word.
+  std::istringstream ss(lines.front());
   std::string str;
-  std::ifstream input(pipepath);
-  input >> str;
+  ss >> str;
   return str;
 }
 

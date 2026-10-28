@@ -15,6 +15,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -83,9 +84,12 @@ serve_batch(const SeqIndex& target_seqs_index,
     bf_full_names.push_back(batch_name + SEPARATOR + bf_name);
   }
 
-  std::string target_seq_id;
-  std::ifstream inputstream(target_ids_input_pipe);
-  while (bool(inputstream >> target_seq_id) && target_seq_id != END_SYMBOL) {
+  for (const auto& id_line : read_pipe_lines(target_ids_input_pipe, END_SYMBOL)) {
+    std::istringstream id_stream(id_line);
+    std::string target_seq_id;
+    if (!(id_stream >> target_seq_id)) {
+      continue;
+    }
     const auto target_seq_len = target_seqs_index.get_seq_len(target_seq_id);
 
     const auto& mappings = all_mappings.get_mappings(target_seq_id);
@@ -133,7 +137,6 @@ serve_batch(const SeqIndex& target_seqs_index,
       fill_bfs(seq, seq_len, hash_num, k_values, kmer_threshold, cbfs, bfs);
     }
   }
-  inputstream.close();
 
   for (size_t i = 0; i < bfs.size(); i++) {
     bfs[i]->save(bf_full_names[i]);

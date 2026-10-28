@@ -30,6 +30,7 @@ from goldpolish_utils import (
     create_simultaneous_batch_processes,
     get_simultaneous_batch_processes,
     update_simultaneous_batch_processes,
+    read_pipe_message,
 )
 
 SEQ_IDS_FILENAME = "seq_ids"
@@ -380,8 +381,7 @@ def polish_batch(
 ):
     with open(batch_name_input_pipe, "w") as f:
         print(batch_num, file=f)
-    with open(batch_target_ids_input_ready_pipe) as f:
-        f.read()
+    read_pipe_message(batch_target_ids_input_ready_pipe)
 
     seq_ids_file = join(batch_dir, SEQ_IDS_FILENAME)
     with open(seq_ids_file, "w") as f:
@@ -440,7 +440,7 @@ def create_end_batch(end_file):
 
 def confirm_polishing_done(polishing_done_pipepath):
     with open(polishing_done_pipepath, "w") as f:
-        f.write(str(1))
+        f.write("1\n")  # newline ends the message (see read_pipe_message)
 
 
 def polish_seqs(
